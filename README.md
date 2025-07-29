@@ -66,6 +66,48 @@ The app includes three main screens:
    - Press `w` for web browser
    - Scan QR code with Expo Go app on your phone
 
+## 📱 APK Build Instructions
+
+### Option A: Quick APK Build (Recommended)
+
+1. **Create Expo account** at https://expo.dev
+2. **Login to EAS**:
+   ```bash
+   eas login
+   ```
+3. **Build APK**:
+   ```bash
+   eas build --platform android --profile preview
+   ```
+
+### Option B: Alternative Methods
+
+If EAS build doesn't work, you can:
+
+#### Use Expo Go for Testing
+- Share the QR code from `npm start`
+- Company can test using Expo Go app
+- No APK needed for testing
+
+#### Local Build (requires Android Studio)
+1. **Install Android Studio** and set up Android SDK
+2. **Eject from Expo**:
+   ```bash
+   expo eject
+   ```
+3. **Build APK**:
+   ```bash
+   cd android
+   ./gradlew assembleRelease
+   ```
+4. **Find APK** in `android/app/build/outputs/apk/release/`
+
+### APK Installation
+- Download the APK file
+- Enable "Install from unknown sources" on Android device
+- Install the APK file
+- Grant notification permissions when prompted
+
 ## 📁 Project Structure
 
 ```
@@ -194,6 +236,23 @@ healthflex-timer-app/
    - Clear browser cache if using web version
    - Check terminal for error messages
 
+### APK Build Issues
+
+1. **EAS build fails**
+   - Create Expo account at https://expo.dev
+   - Login with: `eas login`
+   - Try again: `eas build --platform android --profile preview`
+
+2. **Local build fails**
+   - Install Android Studio and set up Android SDK
+   - Configure environment variables (ANDROID_HOME, JAVA_HOME)
+   - Run: `expo eject` then `cd android && ./gradlew assembleRelease`
+
+3. **APK installation fails**
+   - Enable "Install from unknown sources" on Android device
+   - Check if APK is compatible with your Android version
+   - Try downloading APK again
+
 ### Getting Help
 
 If you encounter issues:
@@ -201,6 +260,7 @@ If you encounter issues:
 2. Try refreshing the app (press 'r' in terminal)
 3. Restart the development server
 4. Clear browser cache if using web version
+5. For APK issues, check the build logs and error messages
 
 ## 🚀 Future Enhancements
 
@@ -225,6 +285,37 @@ Potential features for future versions:
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🏷️ GitHub Repository & Releases
+
+### Repository Setup
+1. **Create GitHub repository** named `healthflex-timer-app`
+2. **Upload source code** using git commands or GitHub Desktop
+3. **Create release** with APK file attached
+
+### Creating GitHub Release
+1. Go to repository → **Releases** → **Create new release**
+2. **Tag version**: `v1.0.0`
+3. **Release title**: `HealthFlex Timer v1.0.0`
+4. **Upload APK file** to the release
+5. **Add description** with features and installation instructions
+
+### Repository Structure
+```
+healthflex-timer-app/
+├── README.md              # This documentation
+├── package.json           # Dependencies and scripts
+├── app.json              # Expo configuration
+├── eas.json              # EAS build configuration
+├── babel.config.js       # Babel configuration
+├── .gitignore           # Git ignore rules
+├── GITHUB_SETUP.md      # Detailed GitHub setup guide
+└── src/                 # Source code
+    ├── components/      # UI components
+    ├── context/         # State management
+    ├── screens/         # App screens
+    └── utils/           # Utility functions
+```
 
 ## 📞 Support
 
