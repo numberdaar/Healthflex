@@ -1,0 +1,264 @@
+HEALTHFLEX TIMER APP - CODE EXECUTION FLOW DOCUMENTATION
+========================================================
+
+This document explains the code execution flow of the HealthFlex Timer React Native application, showing how each file and function works together in the proper sequence.
+
+PROJECT OVERVIEW
+================
+HealthFlex Timer is a React Native app that allows users to create, manage, and interact with multiple customizable timers. 
+The app includes features like categories, progress visualization, bulk actions, and history tracking.
+
+CODE EXECUTION FLOW
+===================
+
+1. APP STARTUP FLOW
+===================
+
+1.1 App.js (Main Entry Point)
+   PURPOSE: Main entry point of the application
+   EXECUTION FLOW:
+   - App component is the first component to execute
+   - NavigationContainer initializes navigation system
+   - createStackNavigator creates the navigation stack
+   - ThemeProvider wraps the app and provides theme context
+   - TimerProvider wraps the app and provides timer context
+   - useEffect loads saved theme preference from AsyncStorage
+   - toggleTheme function switches between light/dark themes
+   - screenOptions defines global header styles
+   - Stack.Screen defines each screen (Home, AddTimer, History)
+
+1.2 src/context/ThemeContext.js
+   PURPOSE: Manages light/dark theme state across the app
+   EXECUTION FLOW:
+   - ThemeContext creates React Context for theme state
+   - ThemeProvider component wraps the app
+   - useTheme hook returns { isDarkMode, toggleTheme } for components
+   - loadTheme function loads saved theme from AsyncStorage
+   - useEffect automatically loads theme when ThemeProvider mounts
+   - Theme state is automatically saved to AsyncStorage when changed
+
+1.3 src/context/TimerContext.js
+   PURPOSE: Manages all timer-related state and operations
+   EXECUTION FLOW:
+   - TimerContext creates React Context for timer state
+   - TimerProvider component wraps the app
+   - useTimer hook returns { timers, history, dispatch } for components
+   - loadTimers function loads saved timers from AsyncStorage
+   - loadHistory function loads saved history from AsyncStorage
+   - useEffect automatically loads data when TimerProvider mounts
+   - useEffect automatically saves data when timers or history change
+   
+   REDUCER ACTIONS (called by dispatch):
+   - addTimer: Creates new timer with unique ID, name, duration, category, status='idle'
+   - updateTimer: Updates specific timer properties
+   - deleteTimer: Removes timer from timers array by ID
+   - startTimer: Changes timer status to 'running' and starts countdown
+   - pauseTimer: Changes timer status to 'paused' and stops countdown
+   - resetTimer: Resets timer to original duration and status='idle'
+   - completeTimer: Changes timer status to 'completed' and stops countdown
+   - updateTimerTime: Updates remaining time and handles halfway alerts
+   - addToHistory: Adds completed timer to history with completion timestamp
+   - clearHistory: Removes all entries from history array
+   - bulkStartCategory: Starts all timers in specified category
+   - bulkPauseCategory: Pauses all timers in specified category
+   - bulkResetCategory: Resets all timers in specified category
+
+2. SCREEN NAVIGATION FLOW
+==========================
+
+2.1 src/screens/HomeScreen.js (Main Screen)
+   PURPOSE: Main screen displaying timer list and statistics
+   EXECUTION FLOW:
+   - HomeScreen component renders when app starts
+   - useEffect loads theme preference from AsyncStorage
+   - calculateStats calculates total timers, running timers, completed timers
+   - getUniqueCategories extracts unique categories from timers array
+   - filterTimersByCategory filters timers based on selectedCategory
+   - groupTimersByCategory groups filtered timers by their category
+   - handleAddTimer navigates to AddTimerScreen
+   - handleViewHistory navigates to HistoryScreen
+   - handleToggleTheme switches light/dark mode
+   - setSelectedCategory updates selectedCategory state to filter timers
+   - Renders header with app title and theme toggle button
+   - Shows statistics section with timer counts
+   - Displays category filter buttons in horizontal scroll
+   - Maps through category groups and renders CategoryGroup components
+   - Shows action buttons (Add Timer, History) at bottom
+
+2.2 src/components/CategoryGroup.js (Timer Grouping)
+   PURPOSE: Groups timers by category with bulk actions
+   EXECUTION FLOW:
+   - CategoryGroup component receives timers for a specific category
+   - handleToggleExpanded toggles isExpanded state to show/hide timers
+   - handleBulkStart dispatches bulkStartCategory action for all timers in category
+   - handleBulkPause dispatches bulkPauseCategory action for all timers in category
+   - handleBulkReset dispatches bulkResetCategory action for all timers in category
+   - Renders category header with category name and timer count
+   - Shows expand/collapse arrow icon based on isExpanded state
+   - Displays bulk action buttons (Start All, Pause All, Reset All)
+   - Maps through timers in category and renders individual Timer components
+   - Shows category statistics (total timers, running timers, completed timers)
+
+2.3 src/components/Timer.js (Individual Timer)
+   PURPOSE: Individual timer component with countdown functionality
+   EXECUTION FLOW:
+   - Timer component receives timer data as props
+   - useEffect sets up setInterval for countdown (updates every 1000ms)
+   - useEffect handles timer completion and halfway alerts
+   - handleStart dispatches startTimer action and begins countdown
+   - handlePause dispatches pauseTimer action and stops countdown
+   - handleReset dispatches resetTimer action and resets to original duration
+   - handleComplete dispatches completeTimer and addToHistory actions
+   - calculateProgress calculates percentage of time remaining
+   - formatTime formats remaining time as MM:SS display
+   - getStatusColor returns color based on timer status
+   - getStatusText returns text based on timer status
+   - Triggers halfway alerts when timer reaches 50% of duration
+   - Triggers completion notifications when timer reaches 0
+   - Displays progress bar with visual percentage indicator
+   - Shows remaining time in MM:SS format
+   - Renders timer controls (start, pause, reset buttons)
+   - Cleans up setInterval when component unmounts or timer stops
+
+3. TIMER CREATION FLOW
+=======================
+
+3.1 src/screens/AddTimerScreen.js (Timer Creation)
+   PURPOSE: Screen for creating new timers
+   EXECUTION FLOW:
+   - AddTimerScreen component renders when user taps "Add Timer"
+   - handleCreateTimer validates inputs and dispatches addTimer action
+   - handleDurationChange updates duration state when user types
+   - handleCategoryChange updates selectedCategory state when user selects category
+   - handleCustomCategory updates customCategory state when user types custom category
+   - validateForm checks if name is not empty and duration is valid number
+   - generateUniqueId creates unique timer ID using timestamp and random number
+   - quickDurations provides preset duration options (5min, 10min, 15min, 30min, 1hour)
+   - predefinedCategories provides preset categories (Workout, Study, Break, Custom)
+   - Renders form with name input field
+   - Shows duration input with quick-select buttons
+   - Displays category picker with predefined and custom options
+   - Shows validation error messages if form is invalid
+   - Provides Create Timer button that calls handleCreateTimer
+   - Navigates back to HomeScreen after successful timer creation
+
+4. HISTORY MANAGEMENT FLOW
+==========================
+
+4.1 src/screens/HistoryScreen.js (History Display)
+   PURPOSE: Displays completed timer history with export functionality
+   EXECUTION FLOW:
+   - HistoryScreen component renders when user taps "History"
+   - useEffect groups history by date when component mounts or history changes
+   - handleClearHistory shows confirmation alert and dispatches clearHistory action
+   - handleExportHistory creates JSON file with history data and shares it
+   - setSelectedFilter updates selectedFilter state to filter history by category
+   - groupHistoryByDate groups history entries by completion date
+   - getUniqueCategories extracts unique categories from history for filter options
+   - filterHistoryByCategory filters history based on selectedFilter
+   - calculateHistoryStats calculates total completed, total time, average duration
+   - formatDate formats date for display (Today, Yesterday, or date string)
+   - formatTime formats completion time for display
+   - Renders header with title and back navigation
+   - Shows statistics section with completion counts and totals
+   - Displays category filter buttons in horizontal scroll
+   - Maps through grouped history and renders date sections
+   - Shows each history entry with timer details and completion time
+   - Provides Export and Clear History buttons
+   - Uses FileSystem.writeAsStringAsync to create JSON export file
+   - Uses Share.share to allow user to share exported file
+
+5. UTILITY FUNCTIONS FLOW
+==========================
+
+5.1 src/utils/timeUtils.js (Time Utilities)
+   PURPOSE: Time-related utility functions for formatting and calculations
+   EXECUTION FLOW:
+   - formatTime: Converts total seconds to MM:SS format (e.g., 125 seconds = "02:05")
+   - formatDuration: Converts seconds to human-readable format (e.g., 3661 seconds = "1h 1m 1s")
+   - calculateProgress: Calculates percentage of time completed (remaining/total * 100)
+   - getStatusColor: Returns hex color based on timer status:
+     * 'idle' = '#4CAF50' (green)
+     * 'running' = '#2196F3' (blue)
+     * 'paused' = '#FF9800' (orange)
+     * 'completed' = '#F44336' (red)
+   - getStatusText: Returns text based on timer status:
+     * 'idle' = 'Ready'
+     * 'running' = 'Running'
+     * 'paused' = 'Paused'
+     * 'completed' = 'Completed'
+
+5.2 src/utils/notificationUtils.js (Notification Utilities)
+   PURPOSE: Handles push notifications for timer alerts and completion
+   EXECUTION FLOW:
+   - requestNotificationPermissions: Requests permission to send notifications from user
+   - scheduleNotification: Schedules a notification for a specific time in the future
+   - sendImmediateNotification: Sends an immediate notification with title and body
+   - configureNotifications: Sets up notification handlers and permissions on app startup
+   - Notification.requestPermissionsAsync: Requests notification permissions from system
+   - Notification.scheduleNotificationAsync: Schedules notification with specific trigger time
+   - Notification.scheduleNotificationAsync: Schedules immediate notification with no delay
+   - Handles notification permissions (granted, denied, undetermined)
+   - Configures notification sound and badge settings
+   - Sets up notification response handlers for user interactions
+
+6. DATA FLOW AND STATE MANAGEMENT
+=================================
+
+6.1 State Management Flow:
+   - User action → Component handler → dispatch(action) → timerReducer → State update → AsyncStorage save → UI re-render
+
+6.2 Data Persistence Flow:
+   - TimerProvider loads data from AsyncStorage on mount
+   - Any state change triggers automatic save to AsyncStorage
+   - Data persists between app sessions
+
+6.3 Component Interaction Flow:
+   - App.js → TimerProvider → ThemeProvider → NavigationContainer
+   - HomeScreen → CategoryGroup → Timer
+   - Timer receives timer data as props
+   - useEffect sets up setInterval for countdown (every 1000ms)
+   - Updates remaining time and dispatches updateTimerTime action
+   - Triggers halfway alert at 50% completion
+   - Triggers completion notification at 0 seconds
+   - Cleans up interval when component unmounts or timer stops
+
+7. PERFORMANCE OPTIMIZATIONS
+============================
+
+7.1 Memory Management:
+   - useCallback for function memoization to prevent unnecessary re-renders
+   - useMemo for expensive calculations (statistics, filtering, grouping)
+   - Proper cleanup of setInterval when components unmount
+   - Efficient re-rendering with React Context (only affected components re-render)
+
+7.2 Data Handling:
+   - AsyncStorage for local data storage
+   - Automatic save on state changes
+   - Data loading on app startup
+   - Error handling for storage operations
+
+7.3 User Experience:
+   - Lazy loading of screens and components
+   - Optimized list rendering with proper keys
+   - TouchableOpacity for button interactions
+   - Proper text sizing and contrast
+   - Clear visual feedback
+   - Intuitive navigation patterns
+
+8. ERROR HANDLING FLOW
+======================
+
+8.1 Async Operations:
+   - Try-catch blocks for async operations
+   - Graceful fallbacks for failed operations
+   - User-friendly error messages
+   - Console logging for debugging
+
+8.2 Validation:
+   - Form validation in AddTimerScreen
+   - Input validation for timer creation
+   - Error handling for notification permissions
+   - Fallback handling for storage operations
+
+This documentation provides a comprehensive overview of the HealthFlex Timer app's code execution flow, showing how each file and function works together in the proper sequence to create a robust, user-friendly timer application. 
