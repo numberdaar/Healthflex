@@ -42,6 +42,24 @@ The app includes three main screens:
 - Expo CLI (`npm install -g @expo/cli`)
 - iOS Simulator (for iOS development) or Android Studio (for Android development)
 
+### 🚀 Vercel Deployment
+
+1. **Connect to Vercel**:
+   ```bash
+   npm install -g vercel
+   vercel login
+   ```
+
+2. **Deploy to Vercel**:
+   ```bash
+   vercel --prod
+   ```
+
+3. **Or connect GitHub repository**:
+   - Push code to GitHub
+   - Connect repository in Vercel dashboard
+   - Vercel will automatically build and deploy
+
 ### Installation
 
 1. **Clone the repository**
@@ -271,6 +289,23 @@ If you encounter issues:
 3. Restart the development server
 4. Clear browser cache if using web version
 5. For APK issues, check the build logs and error messages
+
+### Vercel Deployment Issues
+
+1. **404 Error on Vercel**:
+   - Make sure `vercel.json` is in the root directory
+   - Check that `build` script exists in `package.json`
+   - Verify `expo export` command works locally
+
+2. **Build fails on Vercel**:
+   - Check Vercel build logs for specific errors
+   - Ensure all dependencies are in `package.json`
+   - Try building locally: `npm run build`
+
+3. **App doesn't load on Vercel**:
+   - Check browser console for JavaScript errors
+   - Verify static files are being served correctly
+   - Test the exported build locally first
 
 ## 🚀 Future Enhancements
 
