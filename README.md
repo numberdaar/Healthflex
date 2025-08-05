@@ -59,8 +59,18 @@ The app includes three main screens:
    ```bash
    npm start
    ```
+   **✨ The app will automatically open in your web browser!**
 
-4. **Run on device/simulator**
+4. **Alternative commands**
+   ```bash
+   npm run dev          # Start in web mode (same as npm start)
+   npm run mobile       # Start with QR code for mobile testing
+   npm run android      # Start Android emulator
+   npm run ios          # Start iOS simulator
+   npm run web          # Start web version
+   ```
+
+5. **Manual platform selection**
    - Press `i` for iOS simulator
    - Press `a` for Android emulator
    - Press `w` for web browser

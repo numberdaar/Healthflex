@@ -26,6 +26,7 @@ CODE EXECUTION FLOW
    - toggleTheme function switches between light/dark themes
    - screenOptions defines global header styles
    - Stack.Screen defines each screen (Home, AddTimer, History)
+   - **Web-first development**: App automatically opens in browser when using `npm start`
 
 1.2 src/context/ThemeContext.js
    PURPOSE: Manages light/dark theme state across the app
